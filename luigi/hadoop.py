@@ -369,9 +369,14 @@ class HadoopJobRunner(JobRunner):
         red_cmd = '{0} mrrunner.py reduce'.format(python_executable)
 
         # replace output with a temporary work directory
-        output_final = job.output().path
-        output_tmp_fn = output_final + '-temp-' + datetime.datetime.now().isoformat().replace(':', '-')
-        tmp_target = luigi.hdfs.HdfsTarget(output_tmp_fn, is_tmp=True)
+        job_output_target = job.output()
+        output_final = job_output_target.path
+        if hasattr(job_output_target, 'stage_output') and not job_output_target.stage_output:
+            job_output_path = output_final
+            tmp_target = None
+        else:
+            job_output_path = output_final + '-temp-' + datetime.datetime.now().isoformat().replace(':', '-')
+            tmp_target = luigi.hdfs.HdfsTarget(job_output_path, is_tmp=True)
 
         arglist = [luigi.hdfs.load_hadoop_cmd(), 'jar', self.streaming_jar]
 
@@ -428,9 +433,12 @@ class HadoopJobRunner(JobRunner):
             arglist += ['-input', target.path]
 
         assert isinstance(job.output(), luigi.hdfs.HdfsTarget)
-        arglist += ['-output', output_tmp_fn]
+        arglist += ['-output', job_output_path]
 
         # submit job
+        if hasattr(job_output_target, 'prepare_for_output'):
+            job_output_target.prepare_for_output()
+
         create_packages_archive(packages, self.tmp_dir + '/packages.tar')
 
         job._dump(self.tmp_dir)
@@ -438,7 +446,8 @@ class HadoopJobRunner(JobRunner):
         run_and_track_hadoop_job(arglist)
 
         # rename temporary work directory to given output
-        tmp_target.move(output_final, raise_if_exists=True)
+        if tmp_target:
+            tmp_target.move(output_final, raise_if_exists=True)
         self.finish()
 
     def finish(self):
