@@ -371,7 +371,7 @@ class HadoopJobRunner(JobRunner):
         # replace output with a temporary work directory
         job_output_target = job.output()
         output_final = job_output_target.path
-        if hasattr(job_output_target, 'stage_output') and not job_output_target.stage_output:
+        if hasattr(job, 'stage_output') and not job.stage_output:
             job_output_path = output_final
             tmp_target = None
         else:
@@ -436,9 +436,6 @@ class HadoopJobRunner(JobRunner):
         arglist += ['-output', job_output_path]
 
         # submit job
-        if hasattr(job_output_target, 'prepare_for_output'):
-            job_output_target.prepare_for_output()
-
         create_packages_archive(packages, self.tmp_dir + '/packages.tar')
 
         job._dump(self.tmp_dir)
