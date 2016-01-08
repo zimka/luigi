@@ -371,7 +371,7 @@ class HadoopJobRunner(JobRunner):
         # replace output with a temporary work directory
         job_output_target = job.output()
         output_final = job_output_target.path
-        if hasattr(job, 'stage_output') and not job.stage_output:
+        if hasattr(job, 'enable_direct_output') and job.enable_direct_output:
             job_output_path = output_final
             tmp_target = None
         else:
