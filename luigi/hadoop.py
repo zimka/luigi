@@ -79,6 +79,13 @@ def get_extra_files(extra_files):
     return result
 
 
+def clear_package_metadata_paths():
+    """Remove cached package metadata paths, for testing."""
+    keylist = _file_path_to_package_meta_path.keys()
+    for key in keylist:
+        del _file_path_to_package_meta_path[key]
+
+
 def get_package_metadata_paths():
     from distlib.database import DistributionPath
 
@@ -88,6 +95,7 @@ def get_package_metadata_paths():
     dist_path = DistributionPath(include_egg=True)
     for distribution in dist_path.get_distributions():
         metadata_path = distribution.path
+        logger.debug("mapping installed files for distribution at %s", metadata_path)
         for installed_file_path, _hash, _size in distribution.list_installed_files():
             absolute_installed_file_path = installed_file_path
             if not os.path.isabs(installed_file_path):
