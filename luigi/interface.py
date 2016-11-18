@@ -254,7 +254,10 @@ class ArgParseInterface(Interface):
             action = "store_true"
         else:
             action = "store"
-        parser.add_argument('--' + param_name.replace('_', '-'), help=' '.join(description), default=None, action=action)
+
+        # Escape any % characters that may be in the parameter name, description, or default values
+        escaped_description = ' '.join(description).replace(r'%', '%%')
+        parser.add_argument('--' + param_name.replace('_', '-'), help=escaped_description, default=None, action=action)
 
     @classmethod
     def add_task_parameters(cls, parser, task_cls):
