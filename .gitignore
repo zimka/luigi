@@ -48,7 +48,7 @@ lib64/
 parts/
 sdist/
 var/
-*.egg-info/
+luigi.egg-info/
 .installed.cfg
 *.egg
 
