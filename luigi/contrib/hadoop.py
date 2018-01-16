@@ -498,6 +498,10 @@ class HadoopJobRunner(JobRunner):
 
         output_final = job.output().path
         # atomic output: replace output with a temporary work directory
+        # Use the job's parameter if present, in preference to the runner's.
+        if hasattr(job, 'enable_direct_output') and job.enable_direct_output:
+            self.end_job_with_atomic_move_dir = False
+
         if self.end_job_with_atomic_move_dir:
             illegal_targets = (
                 luigi.contrib.s3.S3FlagTarget, luigi.contrib.gcs.GCSFlagTarget)
