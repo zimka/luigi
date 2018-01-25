@@ -219,8 +219,13 @@ class S3Client(FileSystem):
         """
         (bucket, key) = self._path_to_bucket_and_key(destination_s3_path)
 
-        # grab and validate the bucket
-        s3_bucket = self.s3.get_bucket(bucket, validate=True)
+        # Grab but don't validate the bucket. If Boto is passed "validate=True",
+        # it will require an additional permission to be present when asked to
+        # list all of the keys in the bucket.  We want to minimize the set of
+        # required permissions so we get a reference to the bucket without
+        # validating that it exists.  It should only require PutObject and
+        # PutObjectAcl permissions in order to write to the target bucket.
+        s3_bucket = self.s3.get_bucket(bucket, validate=False)
 
         # put the file
         s3_key = self.Key(s3_bucket)
@@ -234,8 +239,14 @@ class S3Client(FileSystem):
         :param kwargs: Keyword arguments are passed to the boto function `set_contents_from_string`
         """
         (bucket, key) = self._path_to_bucket_and_key(destination_s3_path)
-        # grab and validate the bucket
-        s3_bucket = self.s3.get_bucket(bucket, validate=True)
+
+        # Grab but don't validate the bucket. If Boto is passed "validate=True",
+        # it will require an additional permission to be present when asked to
+        # list all of the keys in the bucket.  We want to minimize the set of
+        # required permissions so we get a reference to the bucket without
+        # validating that it exists.  It should only require PutObject and
+        # PutObjectAcl permissions in order to write to the target bucket.
+        s3_bucket = self.s3.get_bucket(bucket, validate=False)
 
         # put the content
         s3_key = self.Key(s3_bucket)
@@ -262,8 +273,13 @@ class S3Client(FileSystem):
 
         (bucket, key) = self._path_to_bucket_and_key(destination_s3_path)
 
-        # grab and validate the bucket
-        s3_bucket = self.s3.get_bucket(bucket, validate=True)
+        # Grab but don't validate the bucket. If Boto is passed "validate=True",
+        # it will require an additional permission to be present when asked to
+        # list all of the keys in the bucket.  We want to minimize the set of
+        # required permissions so we get a reference to the bucket without
+        # validating that it exists.  It should only require PutObject and
+        # PutObjectAcl permissions in order to write to the target bucket.
+        s3_bucket = self.s3.get_bucket(bucket, validate=False)
 
         # calculate the number of parts (int division).
         # use modulo to avoid float precision issues
