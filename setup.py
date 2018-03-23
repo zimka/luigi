@@ -20,7 +20,7 @@ except:
     from distutils.core import setup
 
 def get_static_files(path):
-    return [os.path.join(dirpath.replace("luigi/", ""), ext) 
+    return [os.path.join(dirpath.replace("luigi/", ""), ext)
             for (dirpath, dirnames, filenames) in os.walk(path)
             for ext in ["*.html", "*.js", "*.css", "*.png"]]
 
@@ -47,9 +47,9 @@ setup(
     package_data={
         'luigi': luigi_package_data
     },
-    install_requires={
+    install_requires=[
         'distlib==0.2.2'
-    },
+    ],
     scripts=[
         'bin/luigid',
         'bin/luigi'
